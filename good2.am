@@ -1,0 +1,4 @@
+
+MAIN: la vall
+LBL1: MY_MAC
+jmp NEXT

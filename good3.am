@@ -1,0 +1,5 @@
+
+NEXT: move $20, $4
+la K
+call vall
+END: hlt
