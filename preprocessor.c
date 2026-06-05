@@ -123,7 +123,7 @@ int is_macro_name_valid(const char *szName)
         "subi", "addi", "andi", "ori", "nori", "bne", "beq", "blt", "bgt",
         "lb", "sb", "lw", "sw", "lh", "sh", "jmp", "la", "call", "hlt",
         "mcro", "mcroend", 
-        "db", "dh", "dw", "asciz", "entry", "extern"
+        "db", "dh", "dw", "asciz", "entry", "extern", "data"
     };
     if (!isalpha((unsigned char)szName[0]))
     {
