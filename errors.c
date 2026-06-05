@@ -10,7 +10,8 @@ static const char *szErrorMessages[] =
     "Macro name is invalid (reserved word or illegal characters)",
     "Macro is already defined in the macro table",
     "Extra text found at the end of the command",
-    "Missing macro name in macro definition"
+    "Missing macro name in macro definition",
+    "Label name is invalid (reserved word, too long, or illegal characters)",
 };
 
 void print_error(ErrorCode eCode, int nLineNumber)

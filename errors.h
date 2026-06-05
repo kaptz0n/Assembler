@@ -10,6 +10,7 @@ typedef enum
     ERR_MACRO_ALREADY_DEFINED,
     ERR_EXTRA_TEXT,       
     ERR_MISSING_MACRO_NAME,
+    ERR_INVALID_LABEL,
     
     /* Add errors before this entry */
     ERR_COUNT 

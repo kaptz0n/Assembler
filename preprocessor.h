@@ -2,9 +2,9 @@
 #ifndef PREPROCESSOR_H
 #define PREPROCESSOR_H
 #include <stdio.h>
+#include "globals.h"
 
-#define MAX_LINE_LENGTH 82
-#define MAX_MACRO_NAME_LENGTH 78
+
 
 /* Structure for a generic node in a linked list */
 typedef struct LineNode

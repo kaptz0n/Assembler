@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include "preprocessor.h"
 #include "errors.h"
+#include "globals.h"
 
 MacroNode* add_macro(MacroNode **ppHead, const char *szName)
 {
@@ -117,23 +118,15 @@ int is_macro_name_valid(const char *szName)
     int nOpcodeCount;
     int nRegNum;
     
-    /* List of reserved opcodes/instructions */
-    const char *szOpcodes[] = {
-        "add", "sub", "and", "or", "nor", "move", "mvhi", "mvlo",
-        "subi", "addi", "andi", "ori", "nori", "bne", "beq", "blt", "bgt",
-        "lb", "sb", "lw", "sw", "lh", "sh", "jmp", "la", "call", "hlt",
-        "mcro", "mcroend", 
-        "db", "dh", "dw", "asciz", "entry", "extern", "data"
-    };
+
     if (!isalpha((unsigned char)szName[0]))
     {
         return 0;
     }
-    nOpcodeCount = sizeof(szOpcodes) / sizeof(szOpcodes[0]);
-
-    for (i = 0; i < nOpcodeCount; i++)
+    
+    for (i = 0; i < g_nReservedWordsCount; i++)
     {
-        if (strcmp(szName, szOpcodes[i]) == 0)
+        if (strcmp(szName, g_szReservedWords[i]) == 0)
         {
             return 0;
         }
