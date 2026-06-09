@@ -1,8 +1,0 @@
-; This is a comment, it should be passed to the .am file safely
-MAIN: add $3, $5, $9
-
-  ; This line has leading spaces
-LOOP: ori $9, -5, $2
-move $20, $4
-move $4, $20
-hlt

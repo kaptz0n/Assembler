@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "symbols.h"
+#include "../Headers/symbols.h"
 
 SymbolNode* add_symbol(SymbolNode **pHead, const char *szName, int nAddress, SymbolType eType)
 {

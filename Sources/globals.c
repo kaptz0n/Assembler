@@ -1,4 +1,4 @@
-#include "globals.h"
+#include "../Headers/globals.h"
 
 /* List of reserved instructions/opcodes */
 const char *g_szReservedWords[] = {

@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "preprocessor.h"
-#include "errors.h"
-#include "globals.h"
+#include "../Headers/preprocessor.h"
+#include "../Headers/errors.h"
+#include "../Headers/globals.h"
 
 MacroNode* add_macro(MacroNode **ppHead, const char *szName)
 {
@@ -115,7 +115,6 @@ MacroNode* find_macro(MacroNode *pHead, const char *szName)
 int is_macro_name_valid(const char *szName)
 {
     int i;
-    int nOpcodeCount;
     int nRegNum;
     
 
@@ -179,7 +178,6 @@ int process_macros(FILE *pInputFile, FILE *pOutputFile)
     while (fgets(szLine, MAX_LINE_LENGTH, pInputFile) != NULL)
     {
         nLineNumber++;
-
         /* Checks for line too long */
         pNewline = strchr(szLine, '\n');
         if (pNewline == NULL && !feof(pInputFile))
@@ -229,6 +227,7 @@ int process_macros(FILE *pInputFile, FILE *pOutputFile)
         /* Checks if the first field is "mcro" */
         else if (strcmp(w1, "mcro") == 0)
         {
+
             if (nTokens < 2) 
             {
                 print_error(ERR_MISSING_MACRO_NAME, nLineNumber);
@@ -253,10 +252,10 @@ int process_macros(FILE *pInputFile, FILE *pOutputFile)
                 bErrorFound = 1;
                 continue;
             }
-
+            
             /* Save macro in the table */
             pCurrentMacro = add_macro(&pMacroTable, w2);
-
+            printf("Processing macro: %s\n", pCurrentMacro->szName);
             /* Read the macro body */
             while (fgets(szLine, MAX_LINE_LENGTH, pInputFile) != NULL)
             {
@@ -295,6 +294,7 @@ int process_macros(FILE *pInputFile, FILE *pOutputFile)
         else
         {
             fputs(szLine, pOutputFile);
+            
         }
     }
 

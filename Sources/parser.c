@@ -1,16 +1,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include "parser.h"
-#include "errors.h"
-#include "globals.h" 
+#include "../Headers/parser.h"
+#include "../Headers/errors.h"
+#include "../Headers/globals.h" 
 
 int is_valid_label(const char *szName)
 {
     int i;
     int nLen = strlen(szName);
-
-
     /* Checks that the length of the name is valid*/
     if (nLen == 0 || nLen > 31) 
     {

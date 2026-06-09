@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "errors.h"
-#include "preprocessor.h"
+#include "../Headers/errors.h"
+#include "../Headers/preprocessor.h"
+#include "../Headers/symbols.h"
+#include "../Headers/first_pass.h"
 
 int main(int argc, char *argv[])
 {
@@ -60,17 +62,66 @@ int main(int argc, char *argv[])
         /* Run the Preprocessor */
         if (!process_macros(pInputFile, pOutputFile))
         {
+            FILE *pAmFile;
+            SymbolNode *pSymbolTable = NULL;
+            unsigned char DataImage[1000] = {0};
+            unsigned int CodeImage[1000] = {0};
+            int finalDC = 0, finalIC = 0;
+
             printf("Preprocessor success! Created expanded file '%s'.\n", szOutputFilename);
             
-            /* TODO: First Pass and Second Pass */
+            fclose(pOutputFile);
+            pOutputFile = NULL; /* Prevent double-closing at the bottom of the loop */
+
+            pAmFile = fopen(szOutputFilename, "r");
+            if (pAmFile == NULL)
+            {
+                printf("Error: Could not open '%s' for First Pass. Skipping.\n", szOutputFilename);
+                fclose(pInputFile);
+                continue;
+            }
+
+            /* --- RUN FIRST PASS --- */
+            printf("Starting First Pass...\n");
+            if (!first_pass(pAmFile, &pSymbolTable, DataImage, CodeImage, &finalDC, &finalIC))
+            {
+                int j;
+                /* --- VISUAL PRINTOUT --- */
+                printf("--- CODE IMAGE (Instructions) ---\n");
+                for (j = 0; j < (finalIC - 100) / 4; j++) {
+                    printf("Address %d: 0x%08X\n", 100 + (j * 4), CodeImage[j]);
+                }
+                printf("\n");
+
+                printf("--- DATA IMAGE (Arrays & Strings) ---\n");
+                for (j = 0; j < finalDC; j++) {
+                    /* The real memory address of data is finalIC + j */
+                    printf("Address %d: 0x%02X\n", finalIC + j, DataImage[j]);
+                }
+                printf("\n");
+                printf("First Pass success! IC: %d, DC: %d\n", finalIC, finalDC);
+                
+                
+                /* TODO: Second Pass and Exporter */
+            }
+            else
+            {
+                printf("Errors found during First Pass. Compilation aborted for '%s'.\n", szInputFilename);
+            }
+
+            /* Clean up First Pass resources for this specific file */
+            fclose(pAmFile);
+            free_symbol_table(pSymbolTable);
         }
         else
         {
             printf("Errors found in macro expansion. Skipping compilation for '%s'.\n", szInputFilename);
             
             fclose(pInputFile);
+            pInputFile = NULL;
             fclose(pOutputFile);
-            
+            pOutputFile = NULL;
+
             /* Delete the corrupted .am file */
             if (remove(szOutputFilename) != 0)
             {
@@ -79,8 +130,14 @@ int main(int argc, char *argv[])
             continue; 
         }
 
-        fclose(pInputFile);
-        fclose(pOutputFile);
+        if (pInputFile != NULL) 
+        {
+            fclose(pInputFile);
+        }
+        if (pOutputFile != NULL) 
+        {
+            fclose(pOutputFile);
+        }
     }
 
     printf("\nAssembler finished processing all files.\n");
