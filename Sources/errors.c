@@ -20,8 +20,9 @@ static const char *szErrorMessages[] =
     "Unknown instruction command",
     "Incorrect number of operands for this instruction",
     "Invalid register name (must be between $0 and $31)",
-    /* Add error messages before this entry */
+    "Label does not exist in this file",
 };
+
 
 void print_error(ErrorCode eCode, int nLineNumber)
 {

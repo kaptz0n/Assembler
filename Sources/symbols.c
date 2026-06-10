@@ -3,6 +3,7 @@
 #include <string.h>
 #include "../Headers/symbols.h"
 
+
 SymbolNode* add_symbol(SymbolNode **pHead, const char *szName, int nAddress, SymbolType eType)
 {
     SymbolNode *pNewNode;
@@ -18,8 +19,9 @@ SymbolNode* add_symbol(SymbolNode **pHead, const char *szName, int nAddress, Sym
 
     /* Initialize the values of the symbol */
     strncpy(pNewNode->szName, szName, 31);
-    pNewNode->szName[31] = '\0'; /* Ensure null-termination */
+    pNewNode->szName[31] = '\0';
     pNewNode->nAddress = nAddress;
+    pNewNode->isEntry = 0;
     pNewNode->eType = eType;
     pNewNode->pNext = NULL;
 
@@ -41,6 +43,7 @@ SymbolNode* add_symbol(SymbolNode **pHead, const char *szName, int nAddress, Sym
     return pNewNode;
 }
 
+
 SymbolNode* find_symbol(SymbolNode *pHead, const char *szName)
 {
     SymbolNode *pCurrent = pHead;
@@ -59,6 +62,7 @@ SymbolNode* find_symbol(SymbolNode *pHead, const char *szName)
     return NULL;
 }
 
+
 void update_data_symbols(SymbolNode *pHead, int nFinalIC)
 {
     SymbolNode *pCurrent = pHead;
@@ -74,6 +78,7 @@ void update_data_symbols(SymbolNode *pHead, int nFinalIC)
     }
 }
 
+
 void free_symbol_table(SymbolNode *pHead)
 {
     SymbolNode *pCurrent;
@@ -83,5 +88,64 @@ void free_symbol_table(SymbolNode *pHead)
         pCurrent = pHead;
         pHead = pHead->pNext;
         free(pCurrent);
+    }
+}
+
+
+int mark_entry(SymbolNode *pHead, const char *szName)
+{
+    SymbolNode *pTemp = pHead;
+    while (pTemp != NULL)
+    {
+        if (strcmp(pTemp->szName, szName) == 0)
+        {
+            pTemp->isEntry = 1;
+            return 1;
+        }
+        pTemp = pTemp->pNext;
+    }
+    return 0;
+}
+
+
+void add_extrn_usage(ExtNode **pHead, const char *szName, int nAddress)
+{
+    ExtNode *pNew = (ExtNode *)malloc(sizeof(ExtNode));
+    ExtNode *pTemp = *pHead;
+
+    /* Checks for allocation failure */
+    if (!pNew)
+    {
+        return; 
+    }
+
+    strcpy(pNew->szName, szName);
+    pNew->nAddress = nAddress;
+    pNew->pNext = NULL;
+
+    /* If  list is empty, make this the head of the list */
+    if (*pHead == NULL)
+    {
+        *pHead = pNew;
+        return;
+    }
+
+    while (pTemp->pNext != NULL)
+    {
+        pTemp = pTemp->pNext;
+    }
+    pTemp->pNext = pNew;
+}
+
+
+/* Frees the external list memory between files */
+void free_extrn_list(ExtNode *pHead)
+{
+    ExtNode *pTemp;
+    while (pHead != NULL)
+    {
+        pTemp = pHead;
+        pHead = pHead->pNext;
+        free(pTemp);
     }
 }

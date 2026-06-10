@@ -4,8 +4,6 @@
 #include <stdio.h>
 #include "globals.h"
 
-
-
 /* Structure for a generic node in a linked list */
 typedef struct LineNode
 {
@@ -21,6 +19,7 @@ typedef struct MacroNode
     struct MacroNode *pNext;
 } MacroNode;
 
+
 /*
 Adds a new macro definition to the head of the macro table.
 ppHead - Pointer to the head pointer of the macro list.
@@ -29,6 +28,7 @@ Output:
 Returns pointer to the new MacroNode, NULL on failure.
  */
 MacroNode* add_macro(MacroNode **ppHead, const char *szName);
+
 
 /*
 Appends a line of code to the end of an existing macro.
@@ -39,13 +39,13 @@ Returns 0 on success, nonzero on failure.
  */
 int add_line_to_macro(MacroNode *pMacro, const char *szLine);
 
+
 /*
 Frees all allocated memory for the macro table.
 pHead - Pointer to the head of the macro list.
-Output:
-Returns 0 on success, nonzero on failure.
  */
-int free_macro_table(MacroNode *pHead);
+void free_macro_table(MacroNode *pHead);
+
 
 /*
 Searches for a macro by name in the macro table.
@@ -56,6 +56,7 @@ Returns a pointer to the MacroNode if found, NULL on failure.
  */
 MacroNode* find_macro(MacroNode *pHead, const char *szName);
 
+
 /*
 Checks if a line is contains only whitespace characters.
 szLine - The string line to check.
@@ -64,6 +65,7 @@ Returns 1 if the line has whitespaces only, otherwise 0.
 */
 int is_empty_line(const char *szLine);
 
+
 /*
 Checks if a macro name is valid (not a reserved opcode or register).
 szName - The macro name to validate.
@@ -71,6 +73,7 @@ Output:
 Returns 1 if valid, otherwise 0.
  */
 int is_macro_name_valid(const char *szName);
+
 
 /*
 Processes the input file, expands macros, and writes to the output file.

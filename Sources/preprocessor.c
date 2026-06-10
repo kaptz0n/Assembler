@@ -5,6 +5,7 @@
 #include "../Headers/errors.h"
 #include "../Headers/globals.h"
 
+
 MacroNode* add_macro(MacroNode **ppHead, const char *szName)
 {
     MacroNode *pNewNode;
@@ -64,7 +65,8 @@ int add_line_to_macro(MacroNode *pMacro, const char *szLine)
     return 0;
 }
 
-int free_macro_table(MacroNode *pHead)
+
+void free_macro_table(MacroNode *pHead)
 {
     MacroNode *pCurrentMacro;
     MacroNode *pNextMacro;
@@ -89,8 +91,6 @@ int free_macro_table(MacroNode *pHead)
         free(pCurrentMacro);
         pCurrentMacro = pNextMacro;
     }
-    
-    return 0;
 }
 
 
@@ -112,6 +112,8 @@ MacroNode* find_macro(MacroNode *pHead, const char *szName)
     return NULL;
     
 }
+
+
 int is_macro_name_valid(const char *szName)
 {
     int i;
@@ -143,6 +145,7 @@ int is_macro_name_valid(const char *szName)
     return 1;
 }
 
+
 int is_empty_line(const char *szLine)
 {
     int i;
@@ -160,6 +163,8 @@ int is_empty_line(const char *szLine)
     /* Line contains only whitespace */
     return 1; 
 }
+
+
 int process_macros(FILE *pInputFile, FILE *pOutputFile)
 {
     char szLine[MAX_LINE_LENGTH];
@@ -255,7 +260,7 @@ int process_macros(FILE *pInputFile, FILE *pOutputFile)
             
             /* Save macro in the table */
             pCurrentMacro = add_macro(&pMacroTable, w2);
-            printf("Processing macro: %s\n", pCurrentMacro->szName);
+            
             /* Read the macro body */
             while (fgets(szLine, MAX_LINE_LENGTH, pInputFile) != NULL)
             {

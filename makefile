@@ -1,7 +1,5 @@
 CC = gcc
 CFLAGS = -Wall -ansi -pedantic -I Headers
-
-# All the source files required to build the program
 SRCS = Sources/assembler.c \
        Sources/preprocessor.c \
        Sources/first_pass.c \
@@ -10,9 +8,12 @@ SRCS = Sources/assembler.c \
        Sources/parser.c \
        Sources/symbols.c \
        Sources/errors.c \
-       Sources/globals.c
+       Sources/globals.c \
+	   Sources/second_pass.c \
+	   Sources/exporter.c
 
 OBJS = $(SRCS:.c=.o)
+
 assembler: $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o assembler
 
@@ -24,6 +25,12 @@ Sources/preprocessor.o: Sources/preprocessor.c
 
 Sources/first_pass.o: Sources/first_pass.c
 	$(CC) $(CFLAGS) -c Sources/first_pass.c -o Sources/first_pass.o
+
+Sources/second_pass.o: Sources/second_pass.c
+	$(CC) $(CFLAGS) -c Sources/second_pass.c -o Sources/second_pass.o
+
+Sources/exporter.o: Sources/exporter.c
+	$(CC) $(CFLAGS) -c Sources/exporter.c -o Sources/exporter.o
 
 Sources/analyzers.o: Sources/analyzers.c
 	$(CC) $(CFLAGS) -c Sources/analyzers.c -o Sources/analyzers.o
@@ -43,7 +50,9 @@ Sources/errors.o: Sources/errors.c
 Sources/globals.o: Sources/globals.c
 	$(CC) $(CFLAGS) -c Sources/globals.c -o Sources/globals.o
 
-
 clean:
 	find . -name "*.o" -type f -delete
 	find . -name "*.am" -type f -delete
+	find . -name "*.ext" -type f -delete
+	find . -name "*.ent" -type f -delete
+	find . -name "*.ob" -type f -delete

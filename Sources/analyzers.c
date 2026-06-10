@@ -7,51 +7,6 @@
 #include "../Headers/globals.h"
 #include "../Headers/opcodes.h"
 
-/* 
-Extracts operands from a comma-separated string and removes leading/trailing spaces 
-szRawOperands - The raw operand string.
-szParsed - A 2D array to hold up to 3 cleaned operand strings.
-Output:
-Returns the number of operands extracted.
-*/
-static int extract_operands(const char *szRawOperands, char szParsed[3][32])
-{
-    char szCopy[MAX_LINE_LENGTH];
-    char *pToken;
-    int nCount = 0;
-    int i;
-
-    /* No operands */
-    if (strlen(szRawOperands) == 0)
-    {
-        return 0; 
-    }
-
-    strcpy(szCopy, szRawOperands);
-    pToken = strtok(szCopy, ",");
-
-    while (pToken != NULL && nCount < 3)
-    {
-        /* Removes leading spaces */
-        while (*pToken != '\0' && isspace((unsigned char)*pToken))
-        {
-            pToken++;
-        }
-        
-        /* Copies it to the array */
-        strcpy(szParsed[nCount], pToken);
-        
-        /* Remove spaces */
-        for (i = strlen(szParsed[nCount]) - 1; i >= 0 && isspace((unsigned char)szParsed[nCount][i]); i--)
-        {
-            szParsed[nCount][i] = '\0';
-        }
-
-        nCount++;
-        pToken = strtok(NULL, ",");
-    }
-    return nCount;
-}
 
 /*
 Extracts the register number from a string.
@@ -91,7 +46,7 @@ int process_directive(ParsedLine *pLine, unsigned char *pDataImage, int *pDC, in
     char *pEnd;
     int i, nLen;
 
-    /* 1. Handle Strings */
+    /* Handle Strings */
     if (strcmp(pLine->szCommand, ".asciz") == 0)
     {
         nLen = strlen(pLine->szOperands);
@@ -117,7 +72,7 @@ int process_directive(ParsedLine *pLine, unsigned char *pDataImage, int *pDC, in
         return 0;
     }
 
-    /* 2. Handle Numbers */
+    /* Handle Numbers */
     if (strcmp(pLine->szCommand, ".db") == 0 || 
         strcmp(pLine->szCommand, ".dh") == 0 || 
         strcmp(pLine->szCommand, ".dw") == 0)
@@ -178,7 +133,7 @@ int process_directive(ParsedLine *pLine, unsigned char *pDataImage, int *pDC, in
         return 0;
     }
 
-    /* No matching directive found */
+    /* No matching directive was found */
     print_error(ERR_UNKNOWN_DIRECTIVE, nLineNumber);
     return 1; 
 }
@@ -201,16 +156,16 @@ int process_instruction(ParsedLine *pLine, unsigned int *pCodeImage, int *pIC, i
         print_error(ERR_UNKNOWN_COMMAND, nLineNumber);
         return 1;
     }
-
+    
     /* Slice the operands and verify the count */
     nOpCount = extract_operands(pLine->szOperands, szOps);
+    
     if (nOpCount != info.nExpectedOperands)
     {
         print_error(ERR_WRONG_OPERAND_COUNT, nLineNumber);
         return 1;
     }
-
-    /* Build the 32-bit machine code*/
+    /* Build the 32-bit machine code */
     switch (info.eType)
     {
         case TYPE_R:
@@ -240,6 +195,7 @@ int process_instruction(ParsedLine *pLine, unsigned int *pCodeImage, int *pIC, i
 
         case TYPE_I:
             rs = get_register_number(szOps[0]);
+            
             /* Checks if the instruction is a branch */
             if (szOps[1][0] == '$') 
             { 
@@ -282,7 +238,7 @@ int process_instruction(ParsedLine *pLine, unsigned int *pCodeImage, int *pIC, i
             break;
 
         case TYPE_J:
-
+            
             /* Checks if the instruction is hlt */
             if (info.nExpectedOperands == 0) 
             {
@@ -321,6 +277,7 @@ int process_instruction(ParsedLine *pLine, unsigned int *pCodeImage, int *pIC, i
             break;
     }
 
+    
     /* Save to Code Image and advance IC */
     pCodeImage[(*pIC - 100) / 4] = nMachineWord;
     *pIC += 4;

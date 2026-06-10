@@ -6,7 +6,7 @@ const char *g_szReservedWords[] = {
         "subi", "addi", "andi", "ori", "nori", "bne", "beq", "blt", "bgt",
         "lb", "sb", "lw", "sw", "lh", "sh", "jmp", "la", "call", "hlt",
         "mcro", "mcroend", 
-        "db", "dh", "dw", "asciz", "entry", "extern", "data"
+        "db", "dh", "dw", "asciz", "entry", "extern"
 };
 /* Count of reserved words */
 const int g_nReservedWordsCount = sizeof(g_szReservedWords) / sizeof(g_szReservedWords[0]);

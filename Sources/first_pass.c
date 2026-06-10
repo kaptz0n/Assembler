@@ -98,7 +98,6 @@ int first_pass(FILE *pAmFile, SymbolNode **pSymbolTable, unsigned char *pDataIma
         Its an instruction. 
         Checks if there is a label 
         */
-       
         if (strlen(parsedLine.szLabel) > 0)
         {
             if (find_symbol(*pSymbolTable, parsedLine.szLabel) != NULL)
@@ -111,7 +110,7 @@ int first_pass(FILE *pAmFile, SymbolNode **pSymbolTable, unsigned char *pDataIma
                 add_symbol(pSymbolTable, parsedLine.szLabel, IC, SYMBOL_CODE);
             }
         }
-
+        
         /* Send to the Instruction Analyzer to calculate the 32-bit opcode */
         if (process_instruction(&parsedLine, pCodeImage, &IC, nLineNumber))
         {
@@ -125,6 +124,5 @@ int first_pass(FILE *pAmFile, SymbolNode **pSymbolTable, unsigned char *pDataIma
     /* Export the final counter sizes back to the main program */
     *pFinalDC = DC;
     *pFinalIC = IC;
-
     return bErrorFound;
 }

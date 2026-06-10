@@ -19,7 +19,7 @@ typedef enum
     ERR_UNKNOWN_COMMAND,
     ERR_WRONG_OPERAND_COUNT,
     ERR_INVALID_REGISTER,
-    
+    ERR_LABEL_NOT_FOUND,
     /* Add errors before this entry */
     ERR_COUNT 
 } ErrorCode;
@@ -31,5 +31,6 @@ eCode - The error code for which to print a message.
 nLineNumber - The line number where the error occurred.
  */
 void print_error(ErrorCode eCode, int nLineNumber);
+
 
 #endif

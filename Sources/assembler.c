@@ -5,7 +5,9 @@
 #include "../Headers/preprocessor.h"
 #include "../Headers/symbols.h"
 #include "../Headers/first_pass.h"
+#include "../Headers/second_pass.h"
 #include "../Headers/globals.h"
+#include "../Headers/exporter.h"
 
 int main(int argc, char *argv[])
 {
@@ -13,7 +15,7 @@ int main(int argc, char *argv[])
     FILE *pInputFile;
     FILE *pOutputFile;
     char szInputFilename[256];
-    char szOutputFilename[256];
+    char szAmFile[256];
     char *pDot;
 
     /* Checks for at least one file */
@@ -39,9 +41,8 @@ int main(int argc, char *argv[])
         }
         
         /* Create the .am output filename  */
-        strcpy(szOutputFilename, szInputFilename);
-        pDot = strrchr(szOutputFilename, '.'); 
-        strcpy(pDot, ".am");
+        strcpy(szAmFile, szInputFilename);
+        change_extension(szAmFile, ".am");
 
         printf("\n--- Starting compilation for: %s ---\n", szInputFilename);
 
@@ -52,41 +53,54 @@ int main(int argc, char *argv[])
             continue;
         }
 
-        pOutputFile = fopen(szOutputFilename, "w");
+        pOutputFile = fopen(szAmFile, "w");
         if (pOutputFile == NULL)
         {
-            printf("Error: Could not create output file '%s'. Skipping.\n", szOutputFilename);
+            printf("Error: Could not create output file '%s'. Skipping.\n", szAmFile);
             fclose(pInputFile);
             continue;
         }
 
-        /* Run the Preprocessor */
+        /* Runs the Preprocessor */
         if (!process_macros(pInputFile, pOutputFile))
         {
             FILE *pAmFile;
             SymbolNode *pSymbolTable = NULL;
             unsigned char DataImage[MAX_IMAGE_SIZE] = {0};
             unsigned int CodeImage[MAX_IMAGE_SIZE] = {0};
-            int finalDC = 0, finalIC = 0;
+            ExtNode *pExtList = NULL;
+            int finalDC = 0;
+            int finalIC = 0;
 
-            printf("Preprocessor success! Created expanded file '%s'.\n", szOutputFilename);
+            printf("Preprocessor success! Created expanded file '%s'.\n", szAmFile);
             
             fclose(pOutputFile);
+
             /* Prevent double-closing at the bottom of the loop */
             pOutputFile = NULL; 
 
-            pAmFile = fopen(szOutputFilename, "r");
+            pAmFile = fopen(szAmFile, "r");
             if (pAmFile == NULL)
             {
-                printf("Error: Could not open '%s' for First Pass. Skipping.\n", szOutputFilename);
+                printf("Error: Could not open '%s' for First Pass. Skipping.\n", szAmFile);
                 fclose(pInputFile);
                 continue;
             }
 
-            printf("Starting First Pass...\n");
+            printf("Starting First Pass.\n");
             if (!first_pass(pAmFile, &pSymbolTable, DataImage, CodeImage, &finalDC, &finalIC))
             {
-                /* TODO: Second Pass and Exporter */
+                printf("First Pass success!\nStarting Second Pass.\n");
+                if (!second_pass(pAmFile, pSymbolTable, CodeImage, &pExtList))
+                {
+                    printf("Second Pass success! Memory addresses resolved.\n");
+                    export_files(szInputFilename, finalIC, finalDC, CodeImage, DataImage, pSymbolTable, pExtList);
+
+                }
+                else
+                {
+                    printf("Errors found during Second Pass. Compilation aborted for '%s'.\n", szInputFilename);
+                }
             }
             else
             {
@@ -96,6 +110,7 @@ int main(int argc, char *argv[])
             /* Clean up First Pass resources for this specific file */
             fclose(pAmFile);
             free_symbol_table(pSymbolTable);
+            free_extrn_list(pExtList);
         }
         else
         {
@@ -107,9 +122,9 @@ int main(int argc, char *argv[])
             pOutputFile = NULL;
 
             /* Delete the corrupted .am file */
-            if (remove(szOutputFilename) != 0)
+            if (remove(szAmFile) != 0)
             {
-                printf("Warning: Could not delete invalid output file '%s'.\n", szOutputFilename);
+                printf("Warning: Could not delete invalid output file '%s'.\n", szAmFile);
             }
             continue; 
         }

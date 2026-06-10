@@ -6,7 +6,7 @@ typedef enum {
     TYPE_R,
     TYPE_I,
     TYPE_J,
-    TYPE_UNKNOWN /* Instruction doesn't exist */
+    TYPE_UNKNOWN
 } InstructionType;
 
 /* Instruction Structure */
@@ -18,12 +18,14 @@ typedef struct {
     int nExpectedOperands;
 } InstructionInfo;
 
+
 /*
-Looks up a command string in the dictionary.
-szCommand - The command string to look up (e.g., "add", "lw").
+Retrieves information about a command.
+szCommand - The command string to look up.
 Output:
 Returns the InstructionInfo struct. If not found, eType will be TYPE_UNKNOWN.
  */
 InstructionInfo get_instruction_info(const char *szCommand);
+
 
 #endif

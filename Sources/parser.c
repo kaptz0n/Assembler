@@ -9,7 +9,8 @@ int is_valid_label(const char *szName)
 {
     int i;
     int nLen = strlen(szName);
-    /* Checks that the length of the name is valid*/
+
+    /* Checks that the length of the name is valid */
     if (nLen == 0 || nLen > 31) 
     {
         return 0;
@@ -47,15 +48,19 @@ int parse_line(const char *szLine, ParsedLine *pOutput, int nLineNumber)
     char szBuffer[MAX_LINE_LENGTH];
     char *pToken;
     char *pRestOfLine;
-    
-    
+    char *pComment;
     pOutput->szLabel[0] = '\0';
     pOutput->szCommand[0] = '\0';
     pOutput->szOperands[0] = '\0';
 
     strcpy(szBuffer, szLine);
+    pComment = strchr(szBuffer, ';');
+        if (pComment != NULL)
+        {
+            *pComment = '\0';
+        }
 
-    /* Clear leading whitespace */
+    /* Clear whitespace */
     pRestOfLine = szBuffer;
     while (isspace((unsigned char)*pRestOfLine))    
     {
@@ -70,7 +75,10 @@ int parse_line(const char *szLine, ParsedLine *pOutput, int nLineNumber)
 
     /* Extract first word */
     pToken = strtok(pRestOfLine, " \t\n\v\f\r");
-    if (pToken == NULL) return 0;
+    if (pToken == NULL)
+    {
+        return 0;
+    }
 
     /* Checks if its a label*/
     if (pToken[strlen(pToken) - 1] == ':')
@@ -87,25 +95,76 @@ int parse_line(const char *szLine, ParsedLine *pOutput, int nLineNumber)
         strcpy(pOutput->szLabel, pToken);
 
         pToken = strtok(NULL, " \t\n\v\f\r");
-        if (pToken == NULL) return 0; 
+        if (pToken == NULL) 
+        {
+            return 0; 
+        }
     }
 
     /* Current token should be the command, saves it */
     strcpy(pOutput->szCommand, pToken);
 
+
+    /* Current token should be the command, saves it */
+    strcpy(pOutput->szCommand, pToken);
+
     /* Save the operands */
-    pRestOfLine = pToken + strlen(pToken) + 1; 
-    while (*pRestOfLine != '\0' && isspace((unsigned char)*pRestOfLine)) 
-    {
-        pRestOfLine++;
-    }
-    strcpy(pOutput->szOperands, pRestOfLine);
+    pRestOfLine = strtok(NULL, "\n\r");
 
-    /* Removes newline from the end*/
-    if (strlen(pOutput->szOperands) > 0 && pOutput->szOperands[strlen(pOutput->szOperands) - 1] == '\n')
+    if (pRestOfLine != NULL)
     {
-        pOutput->szOperands[strlen(pOutput->szOperands) - 1] = '\0';
+        /* Remove leading whitespace */
+        while (*pRestOfLine != '\0' && isspace((unsigned char)*pRestOfLine)) 
+        {
+            pRestOfLine++;
+        }
+        strcpy(pOutput->szOperands, pRestOfLine);
+    }
+    else
+    {
+        /* End is empty */
+        pOutput->szOperands[0] = '\0';
     }
 
-    return 0; 
+    return 0;
+}
+
+int extract_operands(const char *szRawOperands, char szParsed[3][32])
+{
+    char szCopy[MAX_LINE_LENGTH];
+    char *pToken;
+    int nCount = 0;
+    int i;
+    
+    /* No operands */
+    if (strlen(szRawOperands) == 0)
+    {
+        return 0; 
+    }
+
+    strcpy(szCopy, szRawOperands);
+    pToken = strtok(szCopy, ",");
+
+    while (pToken != NULL && nCount < 3)
+    {
+        /* Removes leading spaces */
+        while (*pToken != '\0' && isspace((unsigned char)*pToken))
+        {
+            pToken++;
+        }
+        
+        /* Copies it to the array */
+        strncpy(szParsed[nCount], pToken, 31);
+        szParsed[nCount][31] = '\0';
+        
+        /* Remove spaces */
+        for (i = strlen(szParsed[nCount]) - 1; i >= 0 && isspace((unsigned char)szParsed[nCount][i]); i--)
+        {
+            szParsed[nCount][i] = '\0';
+        }
+
+        nCount++;
+        pToken = strtok(NULL, ",");
+    }
+    return nCount;
 }
