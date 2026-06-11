@@ -1,6 +1,4 @@
-; =========================================
-; bad2.as - Semantic & Symbol Errors
-; =========================================
+; bad2.as
 DUP:    move $1, $2
 DUP:    add $1, $2, $3          ; ERROR: Duplicate label definition
 

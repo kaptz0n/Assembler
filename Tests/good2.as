@@ -1,6 +1,5 @@
-; =========================================
-; good2.as - Extreme Whitespace Test
-; =========================================
+; good2.as
+
              .entry      TARGET
 
 mcro   jumpmacro

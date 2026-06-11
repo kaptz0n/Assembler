@@ -1,6 +1,4 @@
-; =========================================
-; bad1.as - Syntax Errors
-; =========================================
+; bad1.as
 1BADLABEL: add $1, $2, $3       ; ERROR: Label cannot start with a number
 GOOD:      add $32, $1, $2      ; ERROR: Register out of bounds (> 31)
            sub $1, $2 $3        ; ERROR: Missing comma between operands

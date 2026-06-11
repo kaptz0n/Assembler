@@ -1,6 +1,5 @@
-; =========================================
-; good1.as - The Master Integration Test
-; =========================================
+; good1.as
+
 .entry MAIN
 .extern externalroutine
 

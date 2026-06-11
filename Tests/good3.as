@@ -1,6 +1,4 @@
-; =========================================
-; good3.as - Boundary and Edge Cases
-; =========================================
+; good3.as
 .extern EXTLABEL
 
 MaxLenLabelExact31Characters: .dh 0, 32767, -32768
