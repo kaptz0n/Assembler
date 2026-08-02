@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include "globals.h"
 
-/* Structure for a generic node in a linked list */
+/* Structure for a Line node in a linked list */
 typedef struct LineNode
 {
     char szLine[MAX_LINE_LENGTH];
